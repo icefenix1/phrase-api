@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  phrase-api:
+    image: ${DOCKER_REGISTRY-}phraseapi
+    build:
+      context: .
+      dockerfile: phrase-api/Dockerfile
