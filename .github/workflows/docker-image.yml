@@ -1,0 +1,28 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - name: Login to Container Registry
+      uses: docker/login-action@1
+      with:
+          registry: ${{ secrets.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ${{ github.repository }}:$(date +%s)
+           docker tag ${{ github.repository }} ${{ secrets.REGISTRY_URL }}/${{ github.repository }}
+           docker push ${{ secrets.REGISTRY_URL }}/${{ github.repository }}
