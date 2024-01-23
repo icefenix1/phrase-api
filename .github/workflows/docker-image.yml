@@ -25,5 +25,5 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: true
-        tags: phase-api:latest 
-
+        tags: ${{ secrets.REGISTRY_URL }}/phase-api:latest
+        file: ./phase-api/Dockerfile
