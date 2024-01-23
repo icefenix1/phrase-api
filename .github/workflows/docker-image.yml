@@ -23,6 +23,6 @@ jobs:
     
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build ./phrase-api/. --file Dockerfile --tag ${{ github.repository }}:$(date +%s)
+      run: docker build . --file /phrase-api/Dockerfile --tag ${{ github.repository }}:$(date +%s)
            docker tag ${{ github.repository }} ${{ secrets.REGISTRY_URL }}/${{ github.repository }}
            docker push ${{ secrets.REGISTRY_URL }}/${{ github.repository }}
