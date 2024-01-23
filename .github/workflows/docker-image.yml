@@ -11,9 +11,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env: 
-      TAG: ${{ github.repository }}:$(date +%s)
-
+    
     steps:
     - uses: actions/checkout@v3    
     - name: Login to Container Registry
@@ -27,6 +25,6 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: true
-        tags: ${{ secrets.REGISTRY_URL }}/${{ env.TAG }} 
+        tags: ${{ secrets.REGISTRY_URL }}/${{ github.repository }}:$(date +%s) 
         context: "{{defaultContext}}:phrase-api"
 
