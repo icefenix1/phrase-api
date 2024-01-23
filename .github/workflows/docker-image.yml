@@ -25,6 +25,6 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: true
-        tags: ${{ secrets.REGISTRY_URL }}/${{ github.repository }}:$(date +%s) 
+        tags: ${{ secrets.REGISTRY_URL }}/phase-api:$(date +%s) 
         context: "{{defaultContext}}:phrase-api"
 
