@@ -26,4 +26,4 @@ jobs:
       with:
         push: true
         tags: ${{ secrets.REGISTRY_URL }}/phase-api:latest
-        file: ./phase-api/Dockerfile
+        file: ./phase-api/phase-api/Dockerfile
