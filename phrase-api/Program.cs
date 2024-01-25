@@ -2,6 +2,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Logging.ApplicationInsights;
 using Azure.Identity;
+using phrase_api.Contracts.Workers;
+using phrase_api.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry(config =>
             config.ConnectionString = builder.Configuration.GetSection("insights").Value
     );
+
+builder.Services.AddTransient<IWords, Words>();
 
 var app = builder.Build();
 
