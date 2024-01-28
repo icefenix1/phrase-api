@@ -1,39 +1,53 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.AzureAppConfiguration;
-using Microsoft.Extensions.Logging.ApplicationInsights;
 using Azure.Identity;
 using phrase_api.Contracts.Workers;
 using phrase_api.Workers;
+using phrase_api.Repos;
+using phrase_api.Contracts.Repos;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var context = builder.Configuration;
+
+context.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
 
 // Add services to the container.
-builder.Services.AddLogging(configure => configure
+services.AddLogging(configure => configure
         .AddConsole()
         .AddApplicationInsights());
-builder.Services.AddHttpClient();
-builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
-builder.Configuration.AddAzureAppConfiguration(config => config
+
+services.AddHttpClient();
+
+builder.Logging.AddConfiguration(context.GetSection("Logging"));
+
+context.AddAzureAppConfiguration(config => config
         .Connect(Environment.GetEnvironmentVariable("APPCONFIG"))
         .ConfigureKeyVault(kv => kv.SetCredential(new DefaultAzureCredential())));
 
 builder.Logging.AddApplicationInsights(
         configureTelemetryConfiguration: (config) =>
-            config.ConnectionString = builder.Configuration.GetSection("insights").Value,
+            config.ConnectionString = context.GetSection("insights").Value,
             configureApplicationInsightsLoggerOptions: (options) => { }
     );
 
-builder.Services.AddControllers();
+services.AddSingleton<IMongoClient>(new MongoClient(context.GetConnectionString("Mongo")));
+
+services.AddTransient<IPhraseRepository, PhraseRepository>();
+
+services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddApplicationInsightsTelemetry(config =>
-            config.ConnectionString = builder.Configuration.GetSection("insights").Value
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
+services.AddApplicationInsightsTelemetry(config =>
+            config.ConnectionString = context.GetSection("insights").Value
     );
 
-builder.Services.AddTransient<IWords, Words>();
+services.AddTransient<IWordsWoker, WordsWorker>();
+services.AddTransient<IPhraseWorker, PhraseWorker>();
 
-builder.Services.AddCors(options =>
+services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
                builder =>

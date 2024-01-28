@@ -4,12 +4,12 @@ using System.Text.Json;
 
 namespace phrase_api.Workers
 {
-    public class Words : IWords
+    public class WordsWorker : IWordsWoker
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
-        public Words(HttpClient httpClient, IConfiguration configuration)
+        public WordsWorker(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -46,7 +46,7 @@ namespace phrase_api.Workers
                 // Deserialize the JSON string to the RootObject class
                 var data = JsonSerializer.Deserialize<SearchResponse>(jsonString);
 
-                return data.Results.Data.Where(r => r.Split(' ').Length == 1).Take(10);
+                return data.Results.Data.Where(r => r.Split(' ').Length == 1).OrderBy(ob => ob.Length).Take(15);
             }
             else
             {

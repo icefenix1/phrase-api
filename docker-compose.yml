@@ -1,8 +1,24 @@
 version: '3.4'
 
 services:
+  mongodb:
+    image: mongo
+    container_name: mongodb-container
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: thisshouldbeasecret
+
   phrase-api:
     image: ${DOCKER_REGISTRY-}phraseapi
+    depends_on:
+      - mongodb
     build:
       context: .
       dockerfile: phrase-api/Dockerfile
+
+volumes:
+  mongodb_data: {}

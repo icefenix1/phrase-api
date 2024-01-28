@@ -9,9 +9,9 @@ namespace phrase_api.Controllers
     [ApiController]
     public class WordsController : ControllerBase
     {
-        private readonly IWords _words;
+        private readonly IWordsWoker _words;
 
-        public WordsController(IWords words)
+        public WordsController(IWordsWoker words)
         {
             _words = words;
         }
